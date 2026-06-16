@@ -1,13 +1,14 @@
 {
-  "name": "PYME - Inventario y Ventas",
-  "short_name": "PYME",
-  "description": "Aplicación de gestión de inventario y ventas para PyMEs. Workspace of clarity.",
-  "start_url": ".",
+  "name": "PYME OS - ERP de Gestión",
+  "short_name": "PYME OS",
+  "description": "Sistema de planificación de recursos empresariales para el control de inventario, ventas y analítica en la nube.",
+  "start_url": "./index.html",
   "scope": ".",
   "display": "standalone",
-  "orientation": "any",
-  "background_color": "#A0C4FF",
-  "theme_color": "#A0C4FF",
+  "display_override": ["fullscreen", "minimal-ui"],
+  "orientation": "portrait-primary",
+  "background_color": "#0d0f14",
+  "theme_color": "#0d0f14",
   "lang": "es",
   "dir": "ltr",
   "categories": ["business", "productivity", "finance"],
@@ -36,6 +37,5 @@
       "type": "image/png",
       "purpose": "maskable"
     }
-  ],
-  "prefer_related_applications": false
+  ]
 }
