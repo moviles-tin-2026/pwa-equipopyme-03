@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <base href="./">
+  <meta charset="UTF-8">
+  <meta content="IE=Edge" http-equiv="X-UA-Compatible">
+  <meta name="description" content="PYME OS — ERP Móvil de Gestión Completa">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="PYME OS">
+  <meta name="theme-color" content="#0d0f14">
+  <link rel="manifest" href="manifest.json">
+  <link rel="stylesheet" href="styles.css">
+  <title>PYME - Style</title>
+</head>
+<body>
+
+  <section id="mod-auth" class="app-screen">
+    <div class="auth-card">
+      <div class="brand-header">
+        <h1>PYME - Style</h1>
+        <p class="brand-tagline">WORKSPACE OF CLARITY</p>
+      </div>
+      <form id="auth-form" onsubmit="manejarLogin(event)">
+        <div class="form-group">
+          <label>Usuario Operador</label>
+          <input type="email" placeholder="admin@boutique.com" required value="admin@boutique.com">
+        </div>
+        <div class="form-group">
+          <label>Contraseña Corporativa</label>
+          <input type="password" placeholder="••••••••" required value="123456">
+        </div>
+        <button type="submit" class="btn-block" style="margin-top: 1.5rem;">Entrar al Sistema Cloud</button>
+      </form>
+    </div>
+  </section>
+
+  <section id="mod-ventas" class="app-screen hidden">
+    <header class="screen-header">
+      <h2>Punto de Venta</h2>
+      <div class="btn-small">🛒 <span id="cart-count">0</span></div>
+    </header>
+    <div class="screen-content">
+      <div class="products-list" id="ventas-container">
+        </div>
+    </div>
+    <div class="checkout-bar">
+      <button class="btn-block" onclick="procesarVenta()">Registrar Venta ($<span id="cart-total">0.00</span>)</button>
+    </div>
+  </section>
+
+  <section id="mod-inventario" class="app-screen hidden">
+    <header class="screen-header">
+      <h2>Inventario Almacén</h2>
+      <button class="btn-small" onclick="abrirModalAgregar()">+ Añadir Prenda</button>
+    </header>
+    <div class="screen-content">
+      <div class="inventory-table-card">
+        <table class="inventory-table">
+          <thead>
+            <tr>
+              <th>Prenda</th>
+              <th>Stock</th>
+              <th>Precio</th>
+            </tr>
+          </thead>
+          <tbody id="inventario-container">
+            </tbody>
+        </table>
+      </div>
+    </div>
+  </section>
+
+  <section id="mod-admin" class="app-screen hidden">
+    <header class="screen-header">
+      <h2>Panel y Analítica</h2>
+    </header>
+    <div class="screen-content">
+      <div class="metrics-grid">
+        <div class="metric-card">
+          <span class="metric-label">Ingresos Brutos</span>
+          <span class="metric-value" id="metric-ventas">$0.00</span>
+        </div>
+        <div class="metric-card">
+          <span class="metric-label">U. Despachadas</span>
+          <span class="metric-value" id="metric-unidades">0 u.</span>
+        </div>
+      </div>
+      <div class="cloud-status-card">
+        <div class="status-indicator"></div>
+        <div>
+          <span style="font-size: 0.85rem; font-weight:700; display:block;">Instancia Cloud Sincronizada</span>
+          <span style="font-size: 0.7rem; color:var(--text-secondary)">Logs de auditoría activos</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <nav id="app-nav" class="bottom-nav hidden">
+    <button class="nav-item active" onclick="cambiarModulo('ventas', this)">
+      <span class="nav-icon">🛍️</span>
+      <span class="nav-text">Venta</span>
+    </button>
+    <button class="nav-item" onclick="cambiarModulo('inventario', this)">
+      <span class="nav-icon">📦</span>
+      <span class="nav-text">Stock</span>
+    </button>
+    <button class="nav-item" onclick="cambiarModulo('admin', this)">
+      <span class="nav-icon">📊</span>
+      <span class="nav-text">Panel</span>
+    </button>
+    <button class="nav-item" style="color: #f43f5e;" onclick="cerrarSesion()">
+      <span class="nav-icon">🚪</span>
+      <span class="nav-text">Salir</span>
+    </button>
+  </nav>
+
+  <div id="modal-agregar" class="modal-overlay">
+    <div class="modal-sheet">
+      <div class="modal-handle"></div>
+      <p class="modal-title">Registrar Nueva Mercancía</p>
+      <div class="modal-field">
+        <label>Nombre del artículo</label>
+        <input type="text" id="m-nombre" placeholder="Ej. Chaqueta Denim Premium">
+      </div>
+      <div class="modal-field">
+        <label>Precio de etiqueta ($)</label>
+        <input type="number" id="m-precio" placeholder="0.00" min="0" step="0.01">
+      </div>
+      <div class="modal-field">
+        <label>Unidades ingresadas</label>
+        <input type="number" id="m-stock" placeholder="0" min="0">
+      </div>
+      <div class="modal-actions">
+        <button class="btn-block" style="background: rgba(255,255,255,0.04); border: 1px solid var(--border);" onclick="cerrarModalAgregar()">Cancelar</button>
+        <button class="btn-block" onclick="guardarNuevoProducto()">Cargar al ERP</button>
+      </div>
+    </div>
+  </div>
+
+  <script src="app.js"></script>
+</body>
+</html>

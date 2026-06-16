@@ -1,0 +1,41 @@
+{
+  "name": "PYME OS - ERP de Gestión",
+  "short_name": "PYME OS",
+  "description": "Sistema de planificación de recursos empresariales para el control de inventario, ventas y analítica en la nube.",
+  "start_url": "./index.html",
+  "scope": ".",
+  "display": "standalone",
+  "display_override": ["fullscreen", "minimal-ui"],
+  "orientation": "portrait-primary",
+  "background_color": "#0d0f14",
+  "theme_color": "#0d0f14",
+  "lang": "es",
+  "dir": "ltr",
+  "categories": ["business", "productivity", "finance"],
+  "icons": [
+    {
+      "src": "icons/Icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "icons/Icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "icons/Icon-maskable-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "maskable"
+    },
+    {
+      "src": "icons/Icon-maskable-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "maskable"
+    }
+  ]
+}
