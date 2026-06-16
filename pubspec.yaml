@@ -1,0 +1,36 @@
+name: pwa_equipopyme
+description: "Aplicación Web Progresiva para la gestión de PyMEs - Equipo 03"
+publish_to: 'none'
+
+version: 1.0.0+1
+
+environment:
+  sdk: '>=3.0.0 <4.0.0'
+
+dependencies:
+  flutter:
+    sdk: flutter
+
+  # Iconos predeterminados
+  cupertino_icons: ^1.0.5
+
+  # Firebase Core y Servicios Esenciales
+  firebase_core: ^2.32.0
+  firebase_auth: ^4.19.0
+  cloud_firestore: ^4.17.0
+  firebase_storage: ^11.7.0
+
+  # Proveedor de estado (opcional, muy útil para la arquitectura del proyecto)
+  provider: ^6.1.2
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  flutter_lints: ^3.0.0
+
+flutter:
+  uses-material-design: true
+
+  # Configuración de los assets del proyecto (imágenes)
+  assets:
+    - assets/images/mesh_background.png
