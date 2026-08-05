@@ -1,1 +1,0 @@
- /home/deck/Desktop/pwa-equipopyme-03/lumiere-app/mi_app/.dart_tool/flutter_build/d2a04051b594d9942902bddef9a17442/dart_build_result.json:  /home/deck/Desktop/pwa-equipopyme-03/lumiere-app/mi_app/.dart_tool/package_config.json /home/deck/Desktop/pwa-equipopyme-03/lumiere-app/mi_app/pubspec.yaml /home/deck/desarrollo/flutter/bin/cache/dart-sdk/version
