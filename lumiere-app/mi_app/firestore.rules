@@ -1,0 +1,52 @@
+rules_version = '2';
+
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    function autenticado() {
+      return request.auth != null;
+    }
+
+    // El rol se busca en el documento de `usuarios` cuyo ID es el UID del
+    // usuario autenticado (así se crean los usuarios nuevos desde la app,
+    // ver usuarios.dart). La comparación es flexible (campo `rol` o `role`,
+    // contiene "admin" o "supervisor") para calzar con la detección de rol
+    // en el login (main.dart): Administrador y Supervisor tienen acceso
+    // completo, cualquier otro rol (Operador) queda limitado a solo lectura
+    // aquí y a lo que permitan las reglas de cada colección.
+    function tieneAccesoCompleto() {
+      let doc = get(/databases/$(database)/documents/usuarios/$(request.auth.uid)).data;
+      return autenticado() &&
+        exists(/databases/$(database)/documents/usuarios/$(request.auth.uid)) &&
+        (
+          doc.get('rol', '').lower().matches('.*(admin|supervisor).*') ||
+          doc.get('role', '').lower().matches('.*(admin|supervisor).*')
+        );
+    }
+
+    match /productos/{productoId} {
+      allow read: if autenticado();
+      allow create, update: if autenticado();
+      allow delete: if tieneAccesoCompleto();
+    }
+
+    match /ventas/{ventaId} {
+      allow read: if autenticado();
+      // Cualquier usuario autenticado puede registrar una venta; no se
+      // permite editar ni borrar ventas ya registradas (historial fijo).
+      allow create: if autenticado();
+      allow update, delete: if false;
+    }
+
+    match /usuarios/{usuarioId} {
+      allow read: if autenticado();
+      // En el flujo actual (ver usuarios.dart) el documento se crea desde la
+      // sesión de quien da de alta al nuevo usuario (Administrador o
+      // Supervisor), no desde la sesión del usuario nuevo. Se deja también
+      // la opción de que un usuario cree su propio documento (mismo UID)
+      // por si en el futuro se habilita autoregistro.
+      allow create: if tieneAccesoCompleto() || (autenticado() && request.auth.uid == usuarioId);
+      allow update, delete: if tieneAccesoCompleto();
+    }
+  }
+}

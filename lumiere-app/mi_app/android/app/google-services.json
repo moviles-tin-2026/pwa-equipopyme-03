@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "957390818409",
+    "project_id": "lumiere-velas",
+    "storage_bucket": "lumiere-velas.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:957390818409:android:27ab8740df12db45d6a6f8",
+        "android_client_info": {
+          "package_name": "com.example.mi_app"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCd5Nfi-w637MeFAS1llIMzM2uM3_aZz88"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
