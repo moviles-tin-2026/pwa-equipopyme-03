@@ -54,15 +54,31 @@ IconData _iconoCategoria(String categoria) {
 }
 
 class InventarioPage extends StatefulWidget {
+  // Nav: quién ve Usuarios/Reportes (Administrador y Supervisor).
   final bool esAdmin;
+  // Edición: quién puede gestionar usuarios y eliminar productos. Solo
+  // Administrador — Supervisor tiene el mismo acceso de navegación que
+  // Administrador pero es de solo lectura (ver rolNombre/esAdministrador
+  // en main.dart).
+  final bool esAdministrador;
+  final String rolNombre;
 
-  const InventarioPage({super.key, this.esAdmin = false});
+  const InventarioPage({
+    super.key,
+    this.esAdmin = false,
+    this.esAdministrador = false,
+    this.rolNombre = 'Operador',
+  });
 
   @override
   State<InventarioPage> createState() => _InventarioPageState();
 }
 
 class _InventarioPageState extends State<InventarioPage> {
+  // Administrador y Operador pueden agregar/editar productos; Supervisor,
+  // al ser de solo lectura salvo por registrar ventas, no.
+  bool get _puedeEditarProductos => widget.esAdministrador || !widget.esAdmin;
+
   final _formKey = GlobalKey<FormState>();
   final _scaffoldKey = GlobalKey<ScaffoldState>();
 
@@ -294,7 +310,7 @@ class _InventarioPageState extends State<InventarioPage> {
       body: SafeArea(
         child: switch (_section) {
           _NavSection.catalogo => _buildCatalogoSection(),
-          _NavSection.usuarios => const UsuariosPage(),
+          _NavSection.usuarios => UsuariosPage(puedeEditar: widget.esAdministrador),
           _NavSection.ventas => const VentasPage(),
           _NavSection.reportes => const ReportesPage(),
         },
@@ -342,7 +358,7 @@ class _InventarioPageState extends State<InventarioPage> {
                           ),
                         ),
                         Text(
-                          widget.esAdmin ? 'Panel de Administrador' : 'Panel de Operador',
+                          'Panel de ${widget.rolNombre}',
                           style: const TextStyle(
                             color: _Colors.sidebarTextMuted,
                             fontSize: 11,
@@ -480,7 +496,7 @@ class _InventarioPageState extends State<InventarioPage> {
           if (esCatalogo) const SizedBox(width: 10),
           if (esCatalogo) _buildFilterButton(),
           if (esCatalogo) const SizedBox(width: 10),
-          if (esCatalogo) _buildAddProductButton(),
+          if (esCatalogo && _puedeEditarProductos) _buildAddProductButton(),
         ],
       ),
       actions: [
@@ -961,10 +977,12 @@ class _InventarioPageState extends State<InventarioPage> {
                             stock: stock,
                             imageUrl: imageUrl.isEmpty ? null : imageUrl,
                             colorIndex: index,
-                            onDelete: widget.esAdmin
+                            onDelete: widget.esAdministrador
                                 ? () => _eliminarProducto(doc.id)
                                 : null,
-                            onEdit: () => _mostrarDialogoEdicion(doc.id, data),
+                            onEdit: _puedeEditarProductos
+                                ? () => _mostrarDialogoEdicion(doc.id, data)
+                                : null,
                           );
                         },
                       );
@@ -1658,7 +1676,7 @@ class _ProductCard extends StatelessWidget {
   final String? imageUrl;
   final int colorIndex;
   final VoidCallback? onDelete;
-  final VoidCallback onEdit;
+  final VoidCallback? onEdit;
 
   const _ProductCard({
     required this.nombre,
@@ -1668,7 +1686,7 @@ class _ProductCard extends StatelessWidget {
     this.imageUrl,
     required this.colorIndex,
     this.onDelete,
-    required this.onEdit,
+    this.onEdit,
   });
 
   String _localImagePathForProduct(String nombre) {
@@ -1778,23 +1796,25 @@ class _ProductCard extends StatelessWidget {
                     right: 10,
                     child: Row(
                       children: [
-                        Container(
-                          padding: const EdgeInsets.all(4),
-                          decoration: const BoxDecoration(
-                            color: Colors.white24,
-                            shape: BoxShape.circle,
-                          ),
-                          child: IconButton(
-                            icon: const Icon(
-                              Icons.edit_rounded,
-                              size: 18,
-                              color: _Colors.brand,
+                        if (onEdit != null) ...[
+                          Container(
+                            padding: const EdgeInsets.all(4),
+                            decoration: const BoxDecoration(
+                              color: Colors.white24,
+                              shape: BoxShape.circle,
                             ),
-                            onPressed: onEdit,
-                            constraints: const BoxConstraints(),
-                            padding: EdgeInsets.zero,
+                            child: IconButton(
+                              icon: const Icon(
+                                Icons.edit_rounded,
+                                size: 18,
+                                color: _Colors.brand,
+                              ),
+                              onPressed: onEdit,
+                              constraints: const BoxConstraints(),
+                              padding: EdgeInsets.zero,
+                            ),
                           ),
-                        ),
+                        ],
                         if (onDelete != null) ...[
                           const SizedBox(width: 6),
                           Container(

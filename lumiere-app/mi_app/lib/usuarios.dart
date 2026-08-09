@@ -17,11 +17,15 @@ class _Colors {
   static const danger = Color(0xFFC97A7A);
 }
 
-// Esta pantalla solo es alcanzable por un Administrador: InventarioPage
+// Esta pantalla es alcanzable por Administrador y Supervisor: InventarioPage
 // (ver esAdmin en inventario.dart/main.dart) oculta la navegación a
-// "Usuarios" para cualquier otro rol, así que aquí no se vuelve a validar.
+// "Usuarios" para cualquier otro rol. Dentro de la pantalla, `puedeEditar`
+// distingue entre ambos: solo Administrador puede dar de alta o eliminar
+// usuarios — Supervisor la ve, pero de solo lectura.
 class UsuariosPage extends StatefulWidget {
-  const UsuariosPage({super.key});
+  final bool puedeEditar;
+
+  const UsuariosPage({super.key, this.puedeEditar = true});
 
   @override
   State<UsuariosPage> createState() => _UsuariosPageState();
@@ -305,37 +309,39 @@ class _UsuariosPageState extends State<UsuariosPage> {
                 ),
               ),
             ),
-            const SizedBox(width: 12),
-            ElevatedButton.icon(
-              onPressed: () => setState(() => _showAddPanel = !_showAddPanel),
-              style: ElevatedButton.styleFrom(
-                backgroundColor: _showAddPanel
-                    ? _Colors.textDark
-                    : _Colors.brand,
-                foregroundColor: Colors.white,
-                elevation: 0,
-                padding: const EdgeInsets.symmetric(
-                  horizontal: 16,
-                  vertical: 12,
+            if (widget.puedeEditar) ...[
+              const SizedBox(width: 12),
+              ElevatedButton.icon(
+                onPressed: () => setState(() => _showAddPanel = !_showAddPanel),
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: _showAddPanel
+                      ? _Colors.textDark
+                      : _Colors.brand,
+                  foregroundColor: Colors.white,
+                  elevation: 0,
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 16,
+                    vertical: 12,
+                  ),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(12),
+                  ),
                 ),
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(12),
+                icon: Icon(
+                  _showAddPanel
+                      ? Icons.close_rounded
+                      : Icons.person_add_alt_rounded,
+                  size: 18,
+                ),
+                label: Text(
+                  _showAddPanel ? 'Cerrar formulario' : 'Agregar Usuario',
+                  style: const TextStyle(
+                    fontSize: 13,
+                    fontWeight: FontWeight.w600,
+                  ),
                 ),
               ),
-              icon: Icon(
-                _showAddPanel
-                    ? Icons.close_rounded
-                    : Icons.person_add_alt_rounded,
-                size: 18,
-              ),
-              label: Text(
-                _showAddPanel ? 'Cerrar formulario' : 'Agregar Usuario',
-                style: const TextStyle(
-                  fontSize: 13,
-                  fontWeight: FontWeight.w600,
-                ),
-              ),
-            ),
+            ],
           ],
         ),
         const SizedBox(height: 20),
@@ -436,15 +442,17 @@ class _UsuariosPageState extends State<UsuariosPage> {
                               ),
                             ),
                           ),
-                          const SizedBox(width: 8),
-                          IconButton(
-                            icon: const Icon(
-                              Icons.delete_outline_rounded,
-                              color: _Colors.danger,
+                          if (widget.puedeEditar) ...[
+                            const SizedBox(width: 8),
+                            IconButton(
+                              icon: const Icon(
+                                Icons.delete_outline_rounded,
+                                color: _Colors.danger,
+                              ),
+                              tooltip: 'Eliminar usuario',
+                              onPressed: () => _confirmarEliminacion(doc.id, nombre),
                             ),
-                            tooltip: 'Eliminar usuario',
-                            onPressed: () => _confirmarEliminacion(doc.id, nombre),
-                          ),
+                          ],
                         ],
                       ),
                     );

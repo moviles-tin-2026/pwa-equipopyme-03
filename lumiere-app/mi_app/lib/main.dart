@@ -114,43 +114,46 @@ class _LoginPageState extends State<LoginPage> {
           .toString()
           .toLowerCase();
 
-      // 3. Administrador y Supervisor tienen acceso completo; cualquier
-      // otro rol (Operador, o sin rol asignado) solo ve Catálogo y Ventas.
-      bool esAdmin =
-          rolEncontrado.contains('admin') || rolEncontrado.contains('supervisor');
+      // 3. Administrador y Supervisor ven las mismas secciones (Usuarios y
+      // Reportes incluidos); Operador (o sin rol asignado) solo ve Catálogo
+      // y Ventas. Se guarda el nombre del rol (no solo un booleano) para que
+      // la UI pueda mostrarlo tal cual y distinguir permisos de edición.
+      final String rolNombre;
+      if (rolEncontrado.contains('admin')) {
+        rolNombre = 'Administrador';
+      } else if (rolEncontrado.contains('supervisor')) {
+        rolNombre = 'Supervisor';
+      } else {
+        rolNombre = 'Operador';
+      }
+      final bool esAdmin = rolNombre == 'Administrador' || rolNombre == 'Supervisor';
+      // Supervisor ve todo igual que Administrador, pero es de solo lectura:
+      // no puede editar/eliminar productos ni gestionar usuarios (sí puede
+      // registrar ventas, como cualquier rol). Esta distinción también se
+      // aplica en firestore.rules, la UI es solo la capa de conveniencia.
+      final bool esAdministrador = rolNombre == 'Administrador';
 
       // El spinner del botón ya cubre esta espera de red; aprovechamos para
       // descargar el chunk diferido del catálogo antes de navegar.
       await inventario.loadLibrary();
       if (!mounted) return;
 
-      if (esAdmin) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text('Acceso concedido como Administrador'),
-            backgroundColor: Color(0xFF556B2F),
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('Acceso concedido como $rolNombre'),
+          backgroundColor: const Color(0xFF556B2F),
+        ),
+      );
+      Navigator.pushReplacement(
+        context,
+        MaterialPageRoute(
+          builder: (context) => inventario.InventarioPage(
+            esAdmin: esAdmin,
+            esAdministrador: esAdministrador,
+            rolNombre: rolNombre,
           ),
-        );
-        Navigator.pushReplacement(
-          context,
-          MaterialPageRoute(
-            builder: (context) => inventario.InventarioPage(esAdmin: true),
-          ),
-        );
-      } else {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text('Acceso concedido como Operador'),
-            backgroundColor: Color(0xFF556B2F),
-          ),
-        );
-        Navigator.pushReplacement(
-          context,
-          MaterialPageRoute(
-            builder: (context) => inventario.InventarioPage(esAdmin: false),
-          ),
-        );
-      }
+        ),
+      );
 
     } on FirebaseAuthException catch (e) {
       if (!mounted) return;
