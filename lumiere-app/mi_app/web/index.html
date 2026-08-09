@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <!--
+    If you are serving your web app in a path other than the root, change the
+    href value below to reflect the base path you are serving from.
+
+    The path provided below has to start and end with a slash "/" in order for
+    it to work correctly.
+
+    For more details:
+    * https://developer.mozilla.org/en-US/docs/Web/HTML/Element/base
+
+    This is a placeholder for base href that will be replaced by the value of
+    the `--base-href` argument provided to `flutter build`.
+  -->
+  <base href="$FLUTTER_BASE_HREF">
+
+  <!--
+    Declaring our own viewport tag (with pinch-zoom allowed) prevents the
+    Flutter web engine from injecting its default one, which sets
+    user-scalable=no and fails Lighthouse's accessibility checks.
+  -->
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <meta charset="UTF-8">
+  <meta content="IE=Edge" http-equiv="X-UA-Compatible">
+  <meta name="description" content="Lumière & Co. - Gestión de inventario, usuarios y ventas para PyME.">
+
+  <!--
+    Firebase Auth abre un iframe propio (en *.firebaseapp.com) para
+    sincronizar sesión entre pestañas y llama a identitytoolkit/apis.google.com
+    desde el arranque (Firebase.initializeApp corre en main()). Precalentar
+    esas conexiones adelanta el handshake TCP/TLS mientras aún se descarga
+    el motor de Flutter, en vez de pagarlo después en cascada.
+  -->
+  <link rel="preconnect" href="https://lumiere-velas.firebaseapp.com">
+  <link rel="preconnect" href="https://identitytoolkit.googleapis.com">
+  <link rel="preconnect" href="https://apis.google.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <!-- CanvasKit (motor de render) se sirve desde el CDN de Google, que lo
+       entrega pre-comprimido con brotli; auto-hospedarlo en GitHub Pages
+       resultó en un archivo bastante más pesado en la práctica, así que
+       solo se precalienta la conexión en vez de cambiar el origen. -->
+  <link rel="preconnect" href="https://www.gstatic.com" crossorigin>
+
+  <!--
+    Imagen de fondo del login (LCP en la carga inicial): se pide vía
+    AssetImage desde Dart, así que sin este hint el navegador no la
+    descubre hasta que el motor de Flutter ya corrió. Precargarla la pone
+    a bajar en paralelo con main.dart.js/canvaskit.
+  -->
+  <link rel="preload" as="image" fetchpriority="high" href="assets/assets/img/vela_login.webp">
+
+  <!--
+    main.dart.js es el recurso más pesado de la carga inicial (~2.6MB) y,
+    sin este hint, el navegador no lo descubre hasta que flutter_bootstrap.js
+    termina de ejecutarse y lo inyecta como <script>. Precargarlo lo pone a
+    bajar en paralelo con CanvasKit (que es de otro origen, así que no compite
+    por la misma conexión) en vez de esperar esa cadena.
+  -->
+  <link rel="preload" as="script" href="main.dart.js">
+
+  <!-- iOS meta tags & icons -->
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black">
+  <meta name="apple-mobile-web-app-title" content="Lumière & Co.">
+  <link rel="apple-touch-icon" href="icons/Icon-192.png">
+
+  <!-- Favicon -->
+  <link rel="icon" type="image/png" href="favicon.png"/>
+
+  <title>Lumière & Co. - PyME Sync</title>
+  <link rel="manifest" href="manifest.json">
+</head>
+<body>
+  <!--
+    You can customize the "flutter_bootstrap.js" script.
+    This is useful to provide a custom configuration to the Flutter loader
+    or to give the user feedback during the initialization process.
+
+    For more details:
+    * https://docs.flutter.dev/platform-integration/web/initialization
+  -->
+  <script src="flutter_bootstrap.js" async></script>
+</body>
+</html>

@@ -1,0 +1,31 @@
+{
+  "flutter": {
+    "platforms": {
+      "android": {
+        "default": {
+          "projectId": "lumiere-velas",
+          "appId": "1:957390818409:android:27ab8740df12db45d6a6f8",
+          "fileOutput": "android/app/google-services.json"
+        }
+      },
+      "dart": {
+        "lib/firebase_options.dart": {
+          "projectId": "lumiere-velas",
+          "configurations": {
+            "android": "1:957390818409:android:27ab8740df12db45d6a6f8",
+            "ios": "1:957390818409:ios:614057c3351f9560d6a6f8",
+            "macos": "1:957390818409:ios:614057c3351f9560d6a6f8",
+            "web": "1:957390818409:web:bd9464a6f9d08dc9d6a6f8",
+            "windows": "1:957390818409:web:91b1f956c123d66cd6a6f8"
+          }
+        }
+      }
+    }
+  },
+  "firestore": {
+    "rules": "firestore.rules"
+  },
+  "storage": {
+    "rules": "storage.rules"
+  }
+}

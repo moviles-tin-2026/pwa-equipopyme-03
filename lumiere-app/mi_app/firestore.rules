@@ -1,0 +1,71 @@
+rules_version = '2';
+
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    function autenticado() {
+      return request.auth != null;
+    }
+
+    // El rol se busca en el documento de `usuarios` cuyo ID es el UID del
+    // usuario autenticado (así se crean los usuarios nuevos desde la app,
+    // ver usuarios.dart). La comparación es flexible (campo `rol` o `role`).
+    // Administrador y Supervisor ven las mismas secciones en la app, pero
+    // Supervisor es de solo lectura: no puede gestionar usuarios ni
+    // eliminar productos, y tampoco crear/editar productos (eso sí lo
+    // puede hacer Operador). Coherente con la detección de rol en el login
+    // (main.dart: rolNombre/esAdministrador).
+    function esAdministrador() {
+      let doc = get(/databases/$(database)/documents/usuarios/$(request.auth.uid)).data;
+      return autenticado() &&
+        exists(/databases/$(database)/documents/usuarios/$(request.auth.uid)) &&
+        (
+          doc.get('rol', '').lower().matches('.*admin.*') ||
+          doc.get('role', '').lower().matches('.*admin.*')
+        );
+    }
+
+    // True únicamente para quien tiene rol de Supervisor y no también de
+    // Administrador — es la única combinación con acceso de solo lectura.
+    function esSoloSupervisor() {
+      let doc = get(/databases/$(database)/documents/usuarios/$(request.auth.uid)).data;
+      return autenticado() &&
+        exists(/databases/$(database)/documents/usuarios/$(request.auth.uid)) &&
+        (
+          doc.get('rol', '').lower().matches('.*supervisor.*') ||
+          doc.get('role', '').lower().matches('.*supervisor.*')
+        ) &&
+        !(
+          doc.get('rol', '').lower().matches('.*admin.*') ||
+          doc.get('role', '').lower().matches('.*admin.*')
+        );
+    }
+
+    match /productos/{productoId} {
+      allow read: if autenticado();
+      // Administrador y Operador pueden crear/editar productos; Supervisor,
+      // al ser de solo lectura (salvo registrar ventas), no.
+      allow create, update: if autenticado() && !esSoloSupervisor();
+      allow delete: if esAdministrador();
+    }
+
+    match /ventas/{ventaId} {
+      allow read: if autenticado();
+      // Cualquier usuario autenticado (incluido Supervisor) puede registrar
+      // una venta; no se permite editar ni borrar ventas ya registradas
+      // (historial fijo).
+      allow create: if autenticado();
+      allow update, delete: if false;
+    }
+
+    match /usuarios/{usuarioId} {
+      allow read: if autenticado();
+      // En el flujo actual (ver usuarios.dart) el documento se crea desde la
+      // sesión de quien da de alta al nuevo usuario (solo Administrador).
+      // Se deja también la opción de que un usuario cree su propio
+      // documento (mismo UID) por si en el futuro se habilita autoregistro.
+      allow create: if esAdministrador() || (autenticado() && request.auth.uid == usuarioId);
+      allow update, delete: if esAdministrador();
+    }
+  }
+}
