@@ -1,5 +1,6 @@
 // main.dart
 import 'dart:ui';
+import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -18,6 +19,15 @@ import 'inventario.dart' deferred as inventario;
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
+  // SESSION en vez de LOCAL (el default): la sesión dura solo mientras la
+  // pestaña esté abierta, a cambio de evitar el iframe de sincronización
+  // entre pestañas que abre Firebase Auth para la persistencia LOCAL —ese
+  // iframe es el origen de las cookies de terceros que penalizan Best
+  // Practices en Lighthouse. Decisión consciente: el personal deberá
+  // volver a iniciar sesión si cierra la pestaña/navegador.
+  if (kIsWeb) {
+    await FirebaseAuth.instance.setPersistence(Persistence.SESSION);
+  }
   runApp(const MyApp());
 }
 
